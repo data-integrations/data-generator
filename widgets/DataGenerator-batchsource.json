@@ -1,0 +1,300 @@
+
+{
+  "metadata": {
+    "spec-version": "1.5"
+  },
+  "display-name" : "DataGenerator",
+  "configuration-groups": [
+    {
+      "label": "Basic",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName",
+          "widget-attributes" : {
+            "placeholder": "Name used to identify this source for lineage"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Number of Splits",
+          "name": "numSplits",
+          "widget-attributes" : {
+            "default": "10"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Records Per Split",
+          "name": "recordsPerSplit",
+          "widget-attributes" : {
+            "default": "100000"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Random Seed",
+          "name": "seed",
+          "widget-attributes" : {
+            "placeholder": "Seed for random data generation"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Dataset",
+          "name": "dataset",
+          "widget-attributes" : {
+            "default": "users",
+            "values": [
+              "users",
+              "purchases",
+              "custom"
+            ]
+          },
+          "plugin-function": {
+            "label": "Get Schema",
+            "widget": "outputSchema"
+          }
+        }
+      ]
+    },
+    {
+      "label" : "Users Dataset",
+      "properties" : [
+        {
+          "widget-type": "textbox",
+          "label": "Chance to Generate a Skewed ID",
+          "name": "usersSkewedIdChance",
+          "widget-attributes" : {
+            "default": "0"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Number of Skewed IDs",
+          "name": "usersNumSkewedIds",
+          "widget-attributes" : {
+            "default": "0"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Size (KB) of Payload Field",
+          "name": "usersPayloadSizeKB",
+          "widget-attributes" : {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "radio-group",
+          "label": "Type of Payload",
+          "name": "usersPayloadType",
+          "widget-attributes" : {
+            "layout": "inline",
+            "default": "RANDOM_BYTES",
+            "options": [
+              {
+                "id": "RANDOM_BYTES",
+                "label": "Random Bytes"
+              },
+              {
+                "id": "SEMI_RANDOM_STRING",
+                "label": "Semi Random String"
+              }
+            ]
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Chance to Generate Null Values",
+          "name": "usersNullChance",
+          "widget-attributes" : {
+            "default": "10"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Purchases Dataset",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Chance to Generate Skewed User ID",
+          "name": "purchasesSkewedUserIdChance",
+          "widget-attributes" : {
+            "default": "0"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Number of Skewed User IDs",
+          "name": "purchasesNumSkewedUserIds",
+          "widget-attributes" : {
+            "default": "0"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum User ID",
+          "name": "purchasesMaxUserId",
+          "widget-attributes" : {
+            "default": "1000000"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Length (# characters) of Description Field",
+          "name": "purchasesDescLength",
+          "widget-attributes" : {
+            "default": "200"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Size (KB) of Payload Field",
+          "name": "purchasesPayloadSizeKB",
+          "widget-attributes" : {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "radio-group",
+          "label": "Type of Payload",
+          "name": "purchasesPayloadType",
+          "widget-attributes" : {
+            "layout": "inline",
+            "default": "RANDOM_BYTES",
+            "options": [
+              {
+                "id": "RANDOM_BYTES",
+                "label": "Random Bytes"
+              },
+              {
+                "id": "SEMI_RANDOM_STRING",
+                "label": "Semi Random String"
+              }
+            ]
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Chance to Generate Null Values",
+          "name": "purchasesNullChance",
+          "widget-attributes" : {
+            "default": "10"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Custom Dataset",
+      "properties": [
+        {
+          "widget-type": "json-editor",
+          "label": "Field Specifications",
+          "name": "customConfig"
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "schema",
+      "label": "schema",
+      "widget-type": "schema",
+      "widget-attributes": {
+        "schema-types": [
+          "boolean",
+          "int",
+          "long",
+          "float",
+          "double",
+          "bytes",
+          "string"
+        ],
+        "schema-default-type": "string"
+      }
+    }
+  ],
+  "filters": [
+    {
+      "name": "Users Dataset",
+      "condition": {
+        "property": "dataset",
+        "operator": "equal to",
+        "value": "users"
+      },
+      "show": [
+        {
+          "name": "usersSkewedIdChance",
+          "type": "property"
+        },
+        {
+          "name": "usersNumSkewedIds",
+          "type": "property"
+        },
+        {
+          "name": "usersPayloadSizeKB",
+          "type": "property"
+        },
+        {
+          "name": "usersPayloadType",
+          "type": "property"
+        },
+        {
+          "name": "usersNullChance",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "Purchases Dataset",
+      "condition": {
+        "property": "dataset",
+        "operator": "equal to",
+        "value": "purchases"
+      },
+      "show": [
+        {
+          "name": "purchasesSkewedUserIdChance",
+          "type": "property"
+        },
+        {
+          "name": "purchasesNumSkewedUserIds",
+          "type": "property"
+        },
+        {
+          "name": "purchasesMaxUserId",
+          "type": "property"
+        },
+        {
+          "name": "purchasesPayloadSizeKB",
+          "type": "property"
+        },
+        {
+          "name": "purchasesPayloadType",
+          "type": "property"
+        },
+        {
+          "name": "purchasesNullChance",
+          "type": "property"
+        }
+      ]
+    },
+    {
+      "name": "Custom Dataset",
+      "condition": {
+        "property": "dataset",
+        "operator": "equal to",
+        "value": "custom"
+      },
+      "show": [
+        {
+          "name": "customConfig",
+          "type": "property"
+        }
+      ]
+    }
+  ]
+}

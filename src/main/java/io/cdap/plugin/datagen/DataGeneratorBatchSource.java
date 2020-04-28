@@ -19,24 +19,60 @@ package io.cdap.plugin.datagen;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
+import io.cdap.cdap.api.data.batch.Input;
 import io.cdap.cdap.api.data.format.StructuredRecord;
+import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.cdap.etl.api.PipelineConfigurer;
+import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.BatchSource;
 import io.cdap.cdap.etl.api.batch.BatchSourceContext;
+import io.cdap.plugin.common.LineageRecorder;
+
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Generates test data for a pipeline.
  */
+@SuppressWarnings("unused")
 @Plugin(type = BatchSource.PLUGIN_TYPE)
 @Name(DataGeneratorBatchSource.NAME)
 @Description("Generates test data.")
 public class DataGeneratorBatchSource extends BatchSource<Void, StructuredRecord, StructuredRecord> {
   public static final String NAME = "DataGenerator";
+  private final DataGeneratorConfig conf;
 
-  @Override
-  public void prepareRun(BatchSourceContext batchSourceContext) {
-
+  public DataGeneratorBatchSource(DataGeneratorConfig conf) {
+    this.conf = conf;
   }
 
+  @Override
+  public void configurePipeline(PipelineConfigurer pipelineConfigurer) {
+    StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+    DataGeneratorSpec spec = conf.asSpec();
+    if (spec != null) {
+      stageConfigurer.setOutputSchema(spec.getSchema());
+    }
+  }
+
+  @Override
+  public void prepareRun(BatchSourceContext context) {
+    DataGeneratorSpec spec = conf.asSpec();
+    if (spec == null) {
+      throw new IllegalStateException("Unsupported dataset: " + conf.getDataset());
+    }
+    context.setInput(Input.of(conf.getReferenceName(), new FakeDataInputFormat(spec))
+                       .alias(UUID.randomUUID().toString()));
+
+    LineageRecorder lineageRecorder = new LineageRecorder(context, conf.getReferenceName());
+    Schema schema = spec.getSchema();
+    lineageRecorder.createExternalDataset(schema);
+
+    if (schema.getFields() != null) {
+      lineageRecorder.recordRead("Generate", "Generated fake data.",
+                                 schema.getFields().stream().map(Schema.Field::getName).collect(Collectors.toList()));
+    }
+  }
 
 }
 
