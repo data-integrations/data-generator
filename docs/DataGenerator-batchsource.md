@@ -160,6 +160,7 @@ allows passing in 'mean' and 'stddev' arguments, which would be specified as:
 | SEQUENTIAL_LONG        | long      | longs in a regularly increasing sequence                            |
 | SEQUENTIAL_LONG_SKEWED | long      | SEQUENTIAL_LONG except the next number in the sequence is sometimes |
 |                        |           | replaced with a number randomly chosen from a smaller subset        |
+| TEXT                   | string    | constant / static text                                              |
 | TIMESTAMP              | timestamp | uniformly distributed timestamps between a start and end time       |
 | UUID                   | string    | random UUID                                                         |
 
@@ -185,17 +186,17 @@ Defaults to 'full'.
 
 **type:** One of 'full', 'first', 'last', 'username'. Defaults to 'full'.
 
-### RANDOM_BYTES
+#### RANDOM_BYTES
 
 **size:** Size of the byte array to generate. Defaults to 1024.
 
-### RANDOM_INT
+#### RANDOM_INT
 
 **min:** Minimum (inclusive) integer to generate. Defaults to 0.
 
 **max:** Maximum (inclusive) integer to generate. Defaults to the maximum integer value (2,147,483,647).
 
-### RANDOM_INT_SKEWED
+#### RANDOM_INT_SKEWED
 
 **min:** Minimum (inclusive) integer to generate. Defaults to 0.
 
@@ -208,13 +209,13 @@ If no value is given, it defaults to the maximum integer value (2,147,483,647).
 
 **skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
 
-### RANDOM_LONG
+#### RANDOM_LONG
 
 **min:** Minimum (inclusive) long to generate. Defaults to 0.
 
 **max:** Maximum (inclusive) long to generate. Defaults to the maximum long value (2^63-1).
 
-### RANDOM_LONG_SKEWED
+#### RANDOM_LONG_SKEWED
 
 **min:** Minimum (inclusive) long to generate. Defaults to 0.
 
@@ -226,37 +227,17 @@ If no value is given, it defaults to the maximum integer value (2,147,483,647).
 
 **skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
 
-### SEMI_RANDOM_STRING
+#### SEMI_RANDOM_STRING
 
 **size:** Number of characters in the string. Defaults to 100.
 
-### SEQUENTIAL_INT
+#### SEQUENTIAL_INT
 
 **start:** Number to start at. Defaults to 0.
 
 **step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
 
-### SEQUENTIAL_INT_SKEWED
-
-**start:** Number to start at. Defaults to 0.
-
-**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
-
-**skewChance:** Percent chance to generate a skewed number. Must be between 0 and 100.
-When a skewed number is generated, the number that would otherwise be next in the sequence is skipped.
-Defaults to 10.
-
-**skewMin:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 0.
-
-**skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
-
-### SEQUENTIAL_LONG
-
-**start:** Number to start at. Defaults to 0.
-
-**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
-
-### SEQUENTIAL_LONG_SKEWED
+#### SEQUENTIAL_INT_SKEWED
 
 **start:** Number to start at. Defaults to 0.
 
@@ -270,7 +251,31 @@ Defaults to 10.
 
 **skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
 
-### TIMESTAMP
+#### SEQUENTIAL_LONG
+
+**start:** Number to start at. Defaults to 0.
+
+**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
+
+#### SEQUENTIAL_LONG_SKEWED
+
+**start:** Number to start at. Defaults to 0.
+
+**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
+
+**skewChance:** Percent chance to generate a skewed number. Must be between 0 and 100.
+When a skewed number is generated, the number that would otherwise be next in the sequence is skipped.
+Defaults to 10.
+
+**skewMin:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 0.
+
+**skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
+
+#### TEXT
+
+**text:** Text to insert into the field.  Defaults to empty text.
+
+#### TIMESTAMP
 
 **from:** Minimum timestamp in milliseconds to generate. Defaults to 0.
 
