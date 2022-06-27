@@ -16,6 +16,7 @@
 
 package io.cdap.plugin.datagen;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.gson.Gson;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
@@ -124,6 +125,7 @@ public class DataGeneratorStreamingSource extends StreamingSource<StructuredReco
       @Override
       public void onStart() {
         receiverThread = new Thread(() -> {
+          LOG.info("Receiver thread started for partition {}", partition);
           DataGeneratorSpec generatorSpec = new Gson().fromJson(jsonSpec, DataGeneratorSpec.class);
           FakeDataInputSplit inputSplit = new FakeDataInputSplit(generatorSpec, partition);
 
@@ -153,14 +155,18 @@ public class DataGeneratorStreamingSource extends StreamingSource<StructuredReco
               }
             }
           }
+
+          LOG.info("Receiver thread stopped for partition {}", partition);
         });
         receiverThread.start();
       }
 
       @Override
       public void onStop() {
+        LOG.info("Stopping receiver thread for partition {}", partition);
         if (receiverThread != null) {
           receiverThread.interrupt();
+          Uninterruptibles.joinUninterruptibly(receiverThread);
         }
       }
     });
