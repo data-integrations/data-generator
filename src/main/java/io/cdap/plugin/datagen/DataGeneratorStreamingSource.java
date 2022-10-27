@@ -16,8 +16,6 @@
 
 package io.cdap.plugin.datagen;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-import com.google.gson.Gson;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
@@ -29,23 +27,11 @@ import io.cdap.cdap.etl.api.streaming.StreamingContext;
 import io.cdap.cdap.etl.api.streaming.StreamingSource;
 import io.cdap.cdap.etl.api.streaming.StreamingSourceContext;
 import io.cdap.plugin.common.LineageRecorder;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapreduce.JobID;
-import org.apache.hadoop.mapreduce.RecordReader;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.TaskAttemptID;
-import org.apache.hadoop.mapreduce.TaskID;
-import org.apache.hadoop.mapreduce.TaskType;
-import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
-import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.receiver.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -77,7 +63,8 @@ public class DataGeneratorStreamingSource extends StreamingSource<StructuredReco
     JavaStreamingContext jsc = ssc.getSparkStreamingContext();
 
     return IntStream.range(0, spec.getNumSplits())
-      .mapToObj(partition -> createPartitionedDStream(jsc, partition, spec, conf.getPauseMillisPerBatch()))
+      .mapToObj(partition ->
+                  DataGeneratorReceiver.createPartitionedDStream(jsc, partition, spec, conf.getPauseMillisPerBatch()))
       .reduce(JavaDStream::union)
       .orElseThrow(() -> new IllegalStateException("Empty split"));
   }
@@ -108,67 +95,5 @@ public class DataGeneratorStreamingSource extends StreamingSource<StructuredReco
       lineageRecorder.recordRead("Generate", "Generated fake data.",
                                  schema.getFields().stream().map(Schema.Field::getName).collect(Collectors.toList()));
     }
-  }
-
-  private JavaDStream<StructuredRecord> createPartitionedDStream(JavaStreamingContext jsc,
-                                                                 int partition,
-                                                                 DataGeneratorSpec spec,
-                                                                 long pauseMillis) {
-
-    // Turn it to String so that it can be serialized by Spark to transport to the receiver node
-    String jsonSpec = new Gson().toJson(spec);
-
-    return jsc.<StructuredRecord>receiverStream(new Receiver<StructuredRecord>(StorageLevel.MEMORY_AND_DISK()) {
-
-      private transient Thread receiverThread;
-
-      @Override
-      public void onStart() {
-        receiverThread = new Thread(() -> {
-          LOG.info("Receiver thread started for partition {}", partition);
-          DataGeneratorSpec generatorSpec = new Gson().fromJson(jsonSpec, DataGeneratorSpec.class);
-          FakeDataInputSplit inputSplit = new FakeDataInputSplit(generatorSpec, partition);
-
-          // Generate a fake TaskAttemptContext. It is not used by the FakeDataInputFormat
-          TaskID taskId = new TaskID(new JobID("generator", 0), TaskType.MAP, partition);
-          TaskAttemptContext taskAttemptContext = new TaskAttemptContextImpl(new Configuration(),
-                                                                             new TaskAttemptID(taskId, 0));
-          while (!isStopped()) {
-            FakeDataInputFormat inputFormat = new FakeDataInputFormat(conf.asSpec());
-            try (RecordReader<Void, StructuredRecord> reader = inputFormat.createRecordReader(inputSplit,
-                                                                                              taskAttemptContext)) {
-              reader.initialize(inputSplit, taskAttemptContext);
-              while (!isStopped() && reader.nextKeyValue()) {
-                store(reader.getCurrentValue());
-              }
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-              // End the current stream
-            }
-
-            if (!isStopped()) {
-              try {
-                TimeUnit.MILLISECONDS.sleep(pauseMillis);
-              } catch (InterruptedException e) {
-                // Signaled from onStop(), just continue and the while loop will exit
-              }
-            }
-          }
-
-          LOG.info("Receiver thread stopped for partition {}", partition);
-        });
-        receiverThread.start();
-      }
-
-      @Override
-      public void onStop() {
-        LOG.info("Stopping receiver thread for partition {}", partition);
-        if (receiverThread != null) {
-          receiverThread.interrupt();
-          Uninterruptibles.joinUninterruptibly(receiverThread);
-        }
-      }
-    });
   }
 }
