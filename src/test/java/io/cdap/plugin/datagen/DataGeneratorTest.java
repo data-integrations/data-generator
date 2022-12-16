@@ -35,6 +35,7 @@ import io.cdap.cdap.proto.id.ArtifactId;
 import io.cdap.cdap.proto.id.NamespaceId;
 import io.cdap.cdap.test.ApplicationManager;
 import io.cdap.cdap.test.DataSetManager;
+import io.cdap.cdap.test.TestConfiguration;
 import io.cdap.cdap.test.WorkflowManager;
 import io.cdap.plugin.datagen.generator.GeneratorType;
 import io.cdap.plugin.datagen.generator.Schemas;
@@ -42,6 +43,7 @@ import io.cdap.plugin.datagen.generator.SequentialIntGenerator;
 import io.cdap.plugin.datagen.generator.SequentialLongGenerator;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -59,6 +61,9 @@ import java.util.stream.Collectors;
  * Tests for Data Generator.
  */
 public class DataGeneratorTest extends HydratorTestBase {
+  @ClassRule
+  public static final TestConfiguration CONFIG = new TestConfiguration("explore.enabled", false);
+
   private static final Gson GSON = new Gson();
   private static final ArtifactId APP_ARTIFACT_ID = NamespaceId.DEFAULT.artifact("app", "1.0.0");
   private static final ArtifactSummary APP_ARTIFACT = new ArtifactSummary("app", "1.0.0");
