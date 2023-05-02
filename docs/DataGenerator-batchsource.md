@@ -1,28 +1,40 @@
 # Data Generator Source
 
 ## Description
+
 This source generates fake data to use in test scenarios.
-It can be configured to generate a few pre-canned datasets with pre-defined schemas
-with various knobs to control data skew and nullability. It can also be configured in
-a more advanced mode with more control over the output schema and data generated for
+It can be configured to generate a few pre-canned datasets with pre-defined
+schemas
+with various knobs to control data skew and nullability. It can also be
+configured in
+a more advanced mode with more control over the output schema and data generated
+for
 each field.
 
 ## Common Properties
-**Reference Name:** Name used to uniquely identify this source for lineage, annotating metadata, etc.
 
-**Number of Splits:** Number of splits to generate. This controls the level of parallelism.
+**Reference Name:** Name used to uniquely identify this source for lineage,
+annotating metadata, etc.
 
-**Records per Split:** Number of records to generate for each split. Multiply this number by
+**Number of Splits:** Number of splits to generate. This controls the level of
+parallelism.
+
+**Records per Split:** Number of records to generate for each split. Multiply
+this number by
 the number of splits to get the total number of output records.
 
-**Random Seed:** Optional seed to use for random data generator. Set this if you want your
+**Random Seed:** Optional seed to use for random data generator. Set this if you
+want your
 "random" data to be generated in the same way each time.
 
-**Dataset:** Type of dataset to output. Allows selecting a pre-canned dataset with a pre-defined
-output schema and set of properties. A 'custom' dataset can also be chosen, which requires
+**Dataset:** Type of dataset to output. Allows selecting a pre-canned dataset
+with a pre-defined
+output schema and set of properties. A 'custom' dataset can also be chosen,
+which requires
 defining how all the output fields should be generated.
 
 ## Users Dataset
+
 The 'users' dataset outputs data with the following schema:
 
 | name       | type   | description                                                    |
@@ -42,28 +54,38 @@ The 'users' dataset outputs data with the following schema:
 Every field except the id and payload can be made nullable.
 The dataset can be configured with the following properties:
 
-**Chance to Generate a Skewed ID:** Rough percentage of data that should use a skewed ID.
-Unskewed data will generate sequential numbers from 1 to the total number of records.
-Skewed data will be a randomly generated number from 1 to the number of skewed IDs,
+**Chance to Generate a Skewed ID:** Rough percentage of data that should use a
+skewed ID.
+Unskewed data will generate sequential numbers from 1 to the total number of
+records.
+Skewed data will be a randomly generated number from 1 to the number of skewed
+IDs,
 each with equal probability.
 
-**Number of Skewed IDs:** Number of skewed IDs to generate. Skewed IDs start from 1 and
+**Number of Skewed IDs:** Number of skewed IDs to generate. Skewed IDs start
+from 1 and
 go up to this number.
 
-**Length (# characters) of Description Field:** Number of characters of the desc field. This is used to
+**Length (# characters) of Description Field:** Number of characters of the desc
+field. This is used to
 control roughly how large each record should be.
 
-**Size (KB) of Payload Field:** Size in kilobytes of the payload field. This is used to
+**Size (KB) of Payload Field:** Size in kilobytes of the payload field. This is
+used to
 control roughly how large each record should be.
 
-**Payload Type:** Type of payload to generate. Can be random bytes or a semi-random string.
-Use random bytes if you don't want your records to be compressible. Use a semi-random string
+**Payload Type:** Type of payload to generate. Can be random bytes or a
+semi-random string.
+Use random bytes if you don't want your records to be compressible. Use a
+semi-random string
 if you do want them to be compressible.
 
-**Chance to Generate Null Values:** For every field except id and payload, the chance
-that the value should be null. 
+**Chance to Generate Null Values:** For every field except id and payload, the
+chance
+that the value should be null.
 
 ## Purchases Dataset
+
 The 'purchases' dataset outputs data with the following schema:
 
 | name         | type      | description                                                    |
@@ -78,28 +100,37 @@ The 'purchases' dataset outputs data with the following schema:
 The 'ts' and 'price' fields are nullable, but everything else is not.
 The dataset can be configured with the following properties:
 
-**Chance to Generate a Skewed User ID:** Rough percentage of data that should use a skewed user ID.
-Unskewed data will be randomly generated number from 1 to the total number of records, each
-with equal probability. Skewed data will be a randomly generated number from 1 to the
+**Chance to Generate a Skewed User ID:** Rough percentage of data that should
+use a skewed user ID.
+Unskewed data will be randomly generated number from 1 to the total number of
+records, each
+with equal probability. Skewed data will be a randomly generated number from 1
+to the
 number of skewed IDs, each with equal probability
 
-**Number of Skewed User IDs:** Number of skewed user IDs to generate. Skewed IDs start from 1 and
+**Number of Skewed User IDs:** Number of skewed user IDs to generate. Skewed IDs
+start from 1 and
 go up to this number.
 
 **Length of Description Field:** Number of characters of the desc field.
 
-**Size (KB) of Payload Field:** Size in kilobytes of the payload field. This is used to
+**Size (KB) of Payload Field:** Size in kilobytes of the payload field. This is
+used to
 control roughly how large each record should be.
 
-**Payload Type:** Type of payload to generate. Can be random bytes or a semi-random string.
-Use random bytes if you don't want your records to be compressible. Use a semi-random string
+**Payload Type:** Type of payload to generate. Can be random bytes or a
+semi-random string.
+Use random bytes if you don't want your records to be compressible. Use a
+semi-random string
 if you do want them to be compressible.
 
 **Chance to Generate Null Values:** For the 'ts' and 'price' fields, the chance
-that the value should be null. 
+that the value should be null.
 
 ## Custom Dataset
-A custom dataset can be defined by specifying which fields should be generated and how they
+
+A custom dataset can be defined by specifying which fields should be generated
+and how they
 should be generated. This is done by providing a JSON field specification.
 The specification is of the following format:
 
@@ -116,7 +147,8 @@ The specification is of the following format:
 }
 ```
 
-Each generator type defines its own set of arguments that it supports. For example, the 'GAUSSIAN' type
+Each generator type defines its own set of arguments that it supports. For
+example, the 'GAUSSIAN' type
 allows passing in 'mean' and 'stddev' arguments, which would be specified as:
 
 ```
@@ -135,7 +167,6 @@ allows passing in 'mean' and 'stddev' arguments, which would be specified as:
 }
 ```
 
-
 ### Generator Types
 
 | type                   | schema    | description                                                         |
@@ -149,6 +180,7 @@ allows passing in 'mean' and 'stddev' arguments, which would be specified as:
 | PHONE_NUMBER           | string    | random phone numbers                                                |
 | PROFESSION             | string    | random job professions                                              |
 | RANDOM_BYTES           | bytes     | random byte arrays of a specific size                               |
+| RANDOM_CHOSEN_STRING   | string    | randomly picks a string from a list of user provided input          |
 | RANDOM_INT             | int       | random integers in a range with a uniform distribution              |
 | RANDOM_INT_SKEWED      | int       | RANDOM_INT except a subset of numbers is more likely                |
 | RANDOM_LONG            | long      | random longs in a range with a uniform distribution                 |
@@ -164,11 +196,13 @@ allows passing in 'mean' and 'stddev' arguments, which would be specified as:
 | UUID                   | string    | random UUID                                                         |
 
 ### Generator Arguments
+
 Generator types that support arguments are described below.
 
 #### ADDRESS
 
-**type:** One of 'full', 'street', 'city', 'zip', 'state', 'country', 'latitude', or 'longitude'.
+**type:** One of 'full', 'street', 'city', 'zip', 'state', 'country', '
+latitude', or 'longitude'.
 Defaults to 'full'.
 
 #### GAUSSIAN
@@ -193,7 +227,8 @@ Defaults to 'full'.
 
 **min:** Minimum (inclusive) integer to generate. Defaults to 0.
 
-**max:** Maximum (inclusive) integer to generate. Defaults to the maximum integer value (2,147,483,647).
+**max:** Maximum (inclusive) integer to generate. Defaults to the maximum
+integer value (2,147,483,647).
 
 ### RANDOM_INT_SKEWED
 
@@ -202,29 +237,37 @@ Defaults to 'full'.
 **max:** Maximum (inclusive) integer to generate.
 If no value is given, it defaults to the maximum integer value (2,147,483,647).
 
-**skewChance:** Percent chance to generate a skewed number. Must be between 0 and 100. Defaults to 10.
+**skewChance:** Percent chance to generate a skewed number. Must be between 0
+and 100. Defaults to 10.
 
-**skewMin:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 0.
+**skewMin:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 0.
 
-**skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
+**skewMax:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 10.
 
 ### RANDOM_LONG
 
 **min:** Minimum (inclusive) long to generate. Defaults to 0.
 
-**max:** Maximum (inclusive) long to generate. Defaults to the maximum long value (2^63-1).
+**max:** Maximum (inclusive) long to generate. Defaults to the maximum long
+value (2^63-1).
 
 ### RANDOM_LONG_SKEWED
 
 **min:** Minimum (inclusive) long to generate. Defaults to 0.
 
-**max:** Maximum (inclusive) long to generate. Defaults to the maximum long value (2^63-1).
+**max:** Maximum (inclusive) long to generate. Defaults to the maximum long
+value (2^63-1).
 
-**skewChance:** Percent chance to generate a skewed number. Must be between 0 and 100. Defaults to 10.
+**skewChance:** Percent chance to generate a skewed number. Must be between 0
+and 100. Defaults to 10.
 
-**skewMin:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 0.
+**skewMin:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 0.
 
-**skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
+**skewMax:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 10.
 
 ### SEMI_RANDOM_STRING
 
@@ -234,41 +277,53 @@ If no value is given, it defaults to the maximum integer value (2,147,483,647).
 
 **start:** Number to start at. Defaults to 0.
 
-**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
+**step:** Amount to increase the number by when generating the next number in
+the sequence. Defaults to 1.
 
 ### SEQUENTIAL_INT_SKEWED
 
 **start:** Number to start at. Defaults to 0.
 
-**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
+**step:** Amount to increase the number by when generating the next number in
+the sequence. Defaults to 1.
 
-**skewChance:** Percent chance to generate a skewed number. Must be between 0 and 100.
-When a skewed number is generated, the number that would otherwise be next in the sequence is skipped.
+**skewChance:** Percent chance to generate a skewed number. Must be between 0
+and 100.
+When a skewed number is generated, the number that would otherwise be next in
+the sequence is skipped.
 Defaults to 10.
 
-**skewMin:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 0.
+**skewMin:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 0.
 
-**skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
+**skewMax:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 10.
 
 ### SEQUENTIAL_LONG
 
 **start:** Number to start at. Defaults to 0.
 
-**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
+**step:** Amount to increase the number by when generating the next number in
+the sequence. Defaults to 1.
 
 ### SEQUENTIAL_LONG_SKEWED
 
 **start:** Number to start at. Defaults to 0.
 
-**step:** Amount to increase the number by when generating the next number in the sequence. Defaults to 1.
+**step:** Amount to increase the number by when generating the next number in
+the sequence. Defaults to 1.
 
-**skewChance:** Percent chance to generate a skewed number. Must be between 0 and 100.
-When a skewed number is generated, the number that would otherwise be next in the sequence is skipped.
+**skewChance:** Percent chance to generate a skewed number. Must be between 0
+and 100.
+When a skewed number is generated, the number that would otherwise be next in
+the sequence is skipped.
 Defaults to 10.
 
-**skewMin:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 0.
+**skewMin:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 0.
 
-**skewMax:** Minimum (inclusive) integer to generate when generating skewed data. Defaults to 10.
+**skewMax:** Minimum (inclusive) integer to generate when generating skewed
+data. Defaults to 10.
 
 ### TIMESTAMP
 
@@ -276,4 +331,11 @@ Defaults to 10.
 
 **to:** Maximum timestamp in milliseconds to generate.
 Defaults to the current time, which can be different for each data split.
+
+**isAlwaysNow:** If set to true, then always generates the current timestamp.
+Overrides from and to if set.
+
+### RANDOM_CHOSEN_STRING
+
+**choices:** A list of strings that will be randomly chosen at the output.
 

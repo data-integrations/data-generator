@@ -27,13 +27,15 @@ import java.util.concurrent.TimeUnit;
  * Generates random timestamps.
  */
 public class TimestampGenerator extends RandomGenerator<Long> {
+
   private final Date from;
   private final Date to;
   private DateAndTime dateAndTime;
 
   public TimestampGenerator(Config config) {
-    this.from = Date.from(Instant.ofEpochMilli(config.from));
-    this.to = Date.from(Instant.ofEpochMilli(config.to));
+    Date now = Date.from(Instant.ofEpochMilli(System.currentTimeMillis()));
+    this.from = config.isAlwaysNow ? now : Date.from(Instant.ofEpochMilli(config.from));
+    this.to = config.isAlwaysNow ? now : Date.from(Instant.ofEpochMilli(config.to));
   }
 
   @Override
@@ -53,16 +55,23 @@ public class TimestampGenerator extends RandomGenerator<Long> {
    * Config.
    */
   public static class Config {
+
     private long from;
     private long to;
+    private boolean isAlwaysNow;
 
     public Config() {
       this(0, System.currentTimeMillis());
+    }
+
+    public Config(boolean isAlwaysNow) {
+      this.isAlwaysNow = isAlwaysNow;
     }
 
     public Config(long from, long to) {
       this.from = from;
       this.to = to;
     }
+
   }
 }
