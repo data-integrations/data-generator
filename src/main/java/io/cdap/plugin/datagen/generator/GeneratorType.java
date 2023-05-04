@@ -43,6 +43,7 @@ public enum GeneratorType {
   SEQUENTIAL_INT_SKEWED(SequentialIntSkewedGenerator.class, SequentialIntSkewedGenerator.Config.class, Schemas.INT),
   SEQUENTIAL_LONG(SequentialLongGenerator.class, SequentialLongGenerator.Config.class, Schemas.LONG),
   SEQUENTIAL_LONG_SKEWED(SequentialLongSkewedGenerator.class, SequentialLongSkewedGenerator.Config.class, Schemas.LONG),
+  TEXT(TextGenerator.class, TextGenerator.Config.class, Schemas.STRING),
   TIMESTAMP(TimestampGenerator.class, TimestampGenerator.Config.class, Schemas.TIMESTAMP),
   UUID(UUIDGenerator.class, null, Schemas.STRING);
 
