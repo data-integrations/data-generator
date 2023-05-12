@@ -16,6 +16,7 @@
 
 package io.cdap.plugin.datagen;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import io.cdap.cdap.api.artifact.ArtifactSummary;
 import io.cdap.cdap.api.data.format.StructuredRecord;
@@ -38,6 +39,7 @@ import io.cdap.cdap.test.DataSetManager;
 import io.cdap.cdap.test.TestConfiguration;
 import io.cdap.cdap.test.WorkflowManager;
 import io.cdap.plugin.datagen.generator.GeneratorType;
+import io.cdap.plugin.datagen.generator.RandomChosenStringGenerator;
 import io.cdap.plugin.datagen.generator.Schemas;
 import io.cdap.plugin.datagen.generator.SequentialIntGenerator;
 import io.cdap.plugin.datagen.generator.SequentialLongGenerator;
@@ -61,6 +63,7 @@ import java.util.stream.Collectors;
  * Tests for Data Generator.
  */
 public class DataGeneratorTest extends HydratorTestBase {
+
   @ClassRule
   public static final TestConfiguration CONFIG = new TestConfiguration("explore.enabled", false);
 
@@ -222,6 +225,9 @@ public class DataGeneratorTest extends HydratorTestBase {
     fields.add(new FieldSpec("int_id", GeneratorType.SEQUENTIAL_INT, 0, new SequentialIntGenerator.Config(0, 10)));
     // 0, 100, 200, etc
     fields.add(new FieldSpec("long_id", GeneratorType.SEQUENTIAL_LONG, 0, new SequentialLongGenerator.Config(0, 100)));
+    // foobar, barbaz, barbaz, foobar, ...
+    fields.add(new FieldSpec("old_values", GeneratorType.RANDOM_CHOSEN_STRING, 0,
+        new RandomChosenStringGenerator.Config(ImmutableList.of("foobar", "barbaz"))));
     FieldsSpecification fieldsSpec = new FieldsSpecification(fields, "sequence");
 
     Map<String, String> props = new HashMap<>();
@@ -250,6 +256,13 @@ public class DataGeneratorTest extends HydratorTestBase {
     for (int i = 0; i < 1000; i++) {
       Assert.assertEquals(i * 100L, (long) actual.get(i * 10));
     }
+
+    List<Object> oldValues = MockSink.readOutput(outputTable).stream()
+        .map(r -> r.get("old_values"))
+        .collect(Collectors.toList());
+    Assert.assertTrue(oldValues.contains("foobar"));
+    Assert.assertTrue(oldValues.contains("barbaz"));
+    Assert.assertFalse(oldValues.contains("foobaz"));
   }
 
   private static StructuredRecord subset(StructuredRecord record, Schema schema) {

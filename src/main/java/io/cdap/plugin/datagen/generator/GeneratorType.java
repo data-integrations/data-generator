@@ -34,6 +34,8 @@ public enum GeneratorType {
   PHONE_NUMBER(PhoneNumberGenerator.class, null, Schemas.STRING),
   PROFESSION(ProfessionGenerator.class, null, Schemas.STRING),
   RANDOM_BYTES(RandomBytesGenerator.class, RandomBytesGenerator.Config.class, Schemas.BYTES),
+  RANDOM_CHOSEN_STRING(RandomChosenStringGenerator.class, RandomChosenStringGenerator.Config.class,
+      Schemas.STRING),
   RANDOM_INT(RandomIntGenerator.class, RandomIntGenerator.Config.class, Schemas.INT),
   RANDOM_INT_SKEWED(RandomIntSkewedGenerator.class, RandomIntSkewedGenerator.Config.class, Schemas.INT),
   RANDOM_LONG(RandomLongGenerator.class, RandomLongGenerator.Config.class, Schemas.LONG),
